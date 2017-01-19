@@ -499,4 +499,19 @@ class Pushnotification_Apns
 			$this->disconnect_push();
 			$this->disconnect_feedback();
 		}
+
+		/**
+		* Set content-available option which will be send siliet apn message
+		*
+		* @param <array> $data
+		* @return <array>
+		*/
+		public function set_content_available($available)
+		{
+			if (!is_bool($available)) {
+				return false;
+			}
+
+			return $this->content_available = $available;
+		}
 }
