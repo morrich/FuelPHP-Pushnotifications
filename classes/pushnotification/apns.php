@@ -143,9 +143,9 @@ class Pushnotification_Apns
 				if ($sound)
 					$body['aps']['sound'] = $sound;
 				
-			// content-avaliable
+			// content-available
 				if ($this->content_available === true) {
-					$body['aps']['content-avaliable'] = 1;
+					$body['aps']['content-available'] = 1;
 				}
 
 			// always priority is max (10)
