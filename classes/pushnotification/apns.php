@@ -71,6 +71,8 @@ class Pushnotification_Apns
 			255 => 'None (unknown)',
 		);
 	
+		protected $content_available = false;
+		protected $priority = 10;
 		private $connection_start;
 	
 		public $error;
@@ -141,6 +143,13 @@ class Pushnotification_Apns
 				if ($sound)
 					$body['aps']['sound'] = $sound;
 				
+			// content-avaliable
+				if ($this->content_available === true) {
+					$body['aps']['content-avaliable'] = 1;
+				}
+
+			// always priority is max (10)
+				$body['aps']['priority'] = $this->priority;
 
 		   $payload = json_encode($body);
 		   #log_message('debug',"APN: generate_payload '$payload'");
@@ -503,8 +512,8 @@ class Pushnotification_Apns
 		/**
 		* Set content-available option which will be send siliet apn message
 		*
-		* @param <array> $data
-		* @return <array>
+		* @param <bool> $available
+		* @return true
 		*/
 		public function set_content_available($available)
 		{
@@ -513,5 +522,25 @@ class Pushnotification_Apns
 			}
 
 			return $this->content_available = $available;
+		}
+
+		/**
+		* Set priority option
+		*
+		* @param <int> $priority
+		* @return true
+		*/
+		public function set_priority($priority)
+		{
+			if (!is_numeric($available)) {
+				return false;
+			}
+
+			// priority max is 10
+			if ($priority > 10) {
+				$priority = 10;
+			}
+
+			return $this->priority = $priority;
 		}
 }
