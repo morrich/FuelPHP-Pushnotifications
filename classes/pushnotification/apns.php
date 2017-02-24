@@ -77,6 +77,7 @@ class Pushnotification_Apns
 	
 		public $error;
 		public $payload_method = 'simple';
+		public $use_sandbox;
 	
 		/**
 		* Connects to the server with the certificate and passphrase
@@ -92,7 +93,7 @@ class Pushnotification_Apns
 			$stream = stream_socket_client($server, $err, $errstr, $this->timeout, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $ctx);
 			#log_message('debug',"APN: Maybe some errors: $err: $errstr");
 			
-			
+
 			if (!$stream) {
 			
 				if ($err)
@@ -247,12 +248,23 @@ class Pushnotification_Apns
 		 * @param <string> $passphrase
 		 */
 		function __construct() {
-			
-			$this->push_server = \Config::get('pushnotification.Pushnotification_Apns.use_sandbox', 'true') ? \Config::get('pushnotification.Pushnotification_Apns.sandbox.push_gateway', '') : \Config::get('pushnotification.Pushnotification_Apns.production.push_gateway', '');
-			$this->feedback_server = \Config::get('pushnotification.Pushnotification_Apns.use_sandbox', 'true') ? \Config::get('pushnotification.Pushnotification_Apns.sandbox.feedback_gateway', '') : \Config::get('pushnotification.Pushnotification_Apns.production.feedback_gateway', '');
+			$this->use_sandbox = \Config::get('pushnotification.Pushnotification_Apns.use_sandbox', 'true');
+
+			$this->set_server_setting($this->use_sandbox);
+		}
+
+		/**
+		 * Connects to the APNS server with a certificate and a passphrase
+		 *
+		 * @param <bool> $use_sandbox
+		 */
+		public function set_server_setting($use_sandbox = false)
+		{
+			$this->push_server = $use_sandbox ? \Config::get('pushnotification.Pushnotification_Apns.sandbox.push_gateway', '') : \Config::get('pushnotification.Pushnotification_Apns.production.push_gateway', '');
+			$this->feedback_server = $use_sandbox ? \Config::get('pushnotification.Pushnotification_Apns.sandbox.feedback_gateway', '') : \Config::get('pushnotification.Pushnotification_Apns.production.feedback_gateway', '');
 		
-			$this->key_cert_file_path = \Config::get('pushnotification.Pushnotification_Apns.use_sandbox', 'true') ? \Config::get('pushnotification.Pushnotification_Apns.sandbox.certificate', '') : \Config::get('pushnotification.Pushnotification_Apns.production.certificate', '');
-			$this->passphrase = \Config::get('pushnotification.Pushnotification_Apns.use_sandbox', 'true') ? \Config::get('pushnotification.Pushnotification_Apns.sandbox.certificate_passphrase', '') : \Config::get('pushnotification.Pushnotification_Apns.production.certificate_passphrase', '');
+			$this->key_cert_file_path = $use_sandbox ? \Config::get('pushnotification.Pushnotification_Apns.sandbox.certificate', '') : \Config::get('pushnotification.Pushnotification_Apns.production.certificate', '');
+			$this->passphrase = $use_sandbox ? \Config::get('pushnotification.Pushnotification_Apns.sandbox.certificate_passphrase', '') : \Config::get('pushnotification.Pushnotification_Apns.production.certificate_passphrase', '');
 			
 			$this->timeout = \Config::get('pushnotification.Pushnotification_Apns.production.timeout', '80');
 			$this->expiry = \Config::get('pushnotification.Pushnotification_Apns.production.expiry', '86400');
